@@ -15,6 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class SimpleSemaphore {
     /**
      * Constructor initialize the data members.  
+     * Define a Lock to protect the critical section.
      */
     public SimpleSemaphore (int permits,
                             boolean fair)
