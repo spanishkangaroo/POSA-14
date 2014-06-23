@@ -3,8 +3,14 @@ package edu.vuum.mocca;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.os.Messenger;
+import android.os.RemoteException;
+import android.util.Log;
+import android.widget.Toast;
 
 /**
  * @class DownloadIntentService
@@ -62,8 +68,8 @@ public class DownloadIntentService extends IntentService {
     	// TODO - You fill in here to replace null with a call to the
     	// factory method in DownloadUtils that makes a Messenger
     	// Intent with the appropriate parameters.
-
-        return null;
+    	Intent intent = DownloadUtils.makeMessengerIntent(context, DownloadIntentService.class, handler, uri);
+        return intent;
     }
 
     /**
@@ -86,5 +92,21 @@ public class DownloadIntentService extends IntentService {
         // method from the DownloadUtils class that downloads the uri
         // in the intent and returns the file's pathname using a
         // Messenger who's Bundle key is defined by DownloadUtils.MESSENGER_KEY
+    	Uri uri = intent.getData();
+    	String filePath = DownloadUtils.downloadFile(getApplicationContext(), uri);
+    	Messenger messenger = (Messenger) intent.getParcelableExtra(DownloadUtils.MESSENGER_KEY);
+    	
+    	 Bundle data = new Bundle();
+         data.putString(DownloadUtils.PATHNAME_KEY,
+        		 filePath);
+    	Message message = Message.obtain();
+    	message.setData(data);
+    	try {
+			messenger.send(message);
+		} catch (RemoteException e) {
+			Log.e(this.getClass().getSimpleName(), e.toString());
+		}
+    	
+    	
     }
 }
